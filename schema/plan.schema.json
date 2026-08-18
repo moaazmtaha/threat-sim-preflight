@@ -1,0 +1,107 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://moaaztaha.com/schema/threat-sim-preflight/v1.json",
+  "title": "Threat Simulation Preflight Plan",
+  "type": "object",
+  "required": [
+    "schema_version", "title", "owner", "environment", "change_ticket",
+    "evidence_store", "authorizer", "approved_at", "window_start", "window_end",
+    "timezone", "stop_contact", "cleanup_owner", "scope", "actions"
+  ],
+  "properties": {
+    "schema_version": {"const": 1},
+    "title": {"$ref": "#/$defs/text"},
+    "owner": {"$ref": "#/$defs/text"},
+    "environment": {"enum": ["lab", "staging", "production"]},
+    "change_ticket": {"$ref": "#/$defs/text"},
+    "evidence_store": {"$ref": "#/$defs/text"},
+    "authorizer": {"$ref": "#/$defs/text"},
+    "approved_at": {"type": "string", "format": "date-time"},
+    "window_start": {"type": "string", "format": "date-time"},
+    "window_end": {"type": "string", "format": "date-time"},
+    "timezone": {"$ref": "#/$defs/text"},
+    "stop_contact": {"$ref": "#/$defs/text"},
+    "cleanup_owner": {"$ref": "#/$defs/text"},
+    "scope": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/scope"}},
+    "telemetry": {"type": "array", "items": {"$ref": "#/$defs/telemetry"}, "default": []},
+    "actions": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/action"}},
+    "detections": {"type": "array", "items": {"$ref": "#/$defs/detection"}, "default": []},
+    "waivers": {"type": "array", "items": {"$ref": "#/$defs/waiver"}, "default": []}
+  },
+  "$defs": {
+    "text": {"type": "string", "minLength": 1},
+    "identifier": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+    },
+    "textArray": {"type": "array", "items": {"$ref": "#/$defs/text"}, "uniqueItems": true},
+    "scope": {
+      "type": "object",
+      "required": ["id", "kind", "owner", "allowed", "production"],
+      "properties": {
+        "id": {"$ref": "#/$defs/identifier"},
+        "kind": {"$ref": "#/$defs/text"},
+        "owner": {"$ref": "#/$defs/text"},
+        "allowed": {"type": "boolean"},
+        "production": {"type": "boolean"}
+      }
+    },
+    "telemetry": {
+      "type": "object",
+      "required": ["id", "source", "owner", "verified_at"],
+      "properties": {
+        "id": {"$ref": "#/$defs/identifier"},
+        "source": {"$ref": "#/$defs/text"},
+        "owner": {"$ref": "#/$defs/text"},
+        "verified_at": {"type": "string", "format": "date-time"}
+      }
+    },
+    "action": {
+      "type": "object",
+      "required": [
+        "id", "name", "technique_id", "objective", "targets", "depends_on",
+        "expected_telemetry", "cleanup", "stop_conditions", "destructive",
+        "destructive_authorized", "reversible", "data_access"
+      ],
+      "properties": {
+        "id": {"$ref": "#/$defs/identifier"},
+        "name": {"$ref": "#/$defs/text"},
+        "technique_id": {"type": "string", "pattern": "^T[0-9]{4}(\\.[0-9]{3})?$"},
+        "objective": {"$ref": "#/$defs/text"},
+        "targets": {"$ref": "#/$defs/textArray"},
+        "depends_on": {"$ref": "#/$defs/textArray"},
+        "expected_telemetry": {"$ref": "#/$defs/textArray"},
+        "cleanup": {"$ref": "#/$defs/textArray"},
+        "stop_conditions": {"$ref": "#/$defs/textArray"},
+        "destructive": {"type": "boolean"},
+        "destructive_authorized": {"type": "boolean"},
+        "reversible": {"type": "boolean"},
+        "data_access": {"enum": ["none", "metadata", "content"]}
+      }
+    },
+    "detection": {
+      "type": "object",
+      "required": ["id", "name", "technique_id", "owner", "telemetry_ids", "validation"],
+      "properties": {
+        "id": {"$ref": "#/$defs/identifier"},
+        "name": {"$ref": "#/$defs/text"},
+        "technique_id": {"type": "string", "pattern": "^T[0-9]{4}(\\.[0-9]{3})?$"},
+        "owner": {"$ref": "#/$defs/text"},
+        "telemetry_ids": {"$ref": "#/$defs/textArray"},
+        "validation": {"$ref": "#/$defs/text"}
+      }
+    },
+    "waiver": {
+      "type": "object",
+      "required": ["rule_id", "rationale", "approved_by", "expires"],
+      "properties": {
+        "rule_id": {"type": "string", "pattern": "^[A-Z]+[0-9]{3}$"},
+        "rationale": {"$ref": "#/$defs/text"},
+        "approved_by": {"$ref": "#/$defs/text"},
+        "expires": {"type": "string", "format": "date"}
+      }
+    }
+  }
+}

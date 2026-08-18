@@ -1,0 +1,33 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "threat-sim-preflight"
+version = "0.1.0"
+description = "Offline readiness and safety checks for authorized threat-simulation plans"
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "MIT" }
+authors = [{ name = "Moaaz Taha", email = "moaaz@moaaztaha.com" }]
+keywords = ["cybersecurity", "threat-simulation", "adversary-emulation", "mitre-attack", "purple-team"]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Environment :: Console",
+  "License :: OSI Approved :: MIT License",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Topic :: Security",
+]
+
+[project.scripts]
+threat-sim-preflight = "threat_sim_preflight.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/moaazmtaha/threat-sim-preflight"
+Issues = "https://github.com/moaazmtaha/threat-sim-preflight/issues"
+
+[tool.setuptools.packages.find]
+where = ["src"]

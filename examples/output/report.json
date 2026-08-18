@@ -1,0 +1,22 @@
+{
+  "evaluated_at": "2026-08-18T12:00:00+00:00",
+  "execution_order": [
+    "account-discovery",
+    "controlled-powershell"
+  ],
+  "findings": [],
+  "generated_at": "2026-08-18T18:49:59.187891+00:00",
+  "schema_version": 1,
+  "source": "examples\\production-plan.toml",
+  "summary": {
+    "actions": 2,
+    "assets": 3,
+    "error": 0,
+    "note": 0,
+    "ready": true,
+    "score": 100,
+    "title": "Identity control validation",
+    "waived": 0,
+    "warning": 0
+  }
+}

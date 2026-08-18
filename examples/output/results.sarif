@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json.schemastore.org/sarif-2.1.0.json",
+  "runs": [
+    {
+      "properties": {
+        "evaluatedAt": "2026-08-18T12:00:00+00:00",
+        "ready": true,
+        "score": 100
+      },
+      "results": [],
+      "tool": {
+        "driver": {
+          "informationUri": "https://github.com/moaazmtaha/threat-sim-preflight",
+          "name": "threat-sim-preflight",
+          "rules": [],
+          "semanticVersion": "0.1.0"
+        }
+      }
+    }
+  ],
+  "version": "2.1.0"
+}

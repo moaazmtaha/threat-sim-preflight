@@ -1,0 +1,92 @@
+schema_version = 1
+title = "Identity control validation"
+owner = "Threat simulation lead"
+environment = "production"
+change_ticket = "CHG-2026-0818"
+evidence_store = "Restricted engagement evidence folder"
+authorizer = "Change authority"
+approved_at = "2026-08-18T09:30:00+00:00"
+window_start = "2026-08-20T18:00:00+00:00"
+window_end = "2026-08-20T20:00:00+00:00"
+timezone = "UTC"
+stop_contact = "On-call security manager"
+cleanup_owner = "Threat simulation lead"
+
+[[scope]]
+id = "workstation-canary"
+kind = "managed endpoint"
+owner = "Endpoint engineering"
+allowed = true
+production = true
+
+[[scope]]
+id = "identity-tenant"
+kind = "identity provider"
+owner = "Identity engineering"
+allowed = true
+production = true
+
+[[scope]]
+id = "finance-share"
+kind = "file service"
+owner = "Finance technology"
+allowed = false
+production = true
+
+[[telemetry]]
+id = "edr-process"
+source = "Endpoint process events"
+owner = "Detection engineering"
+verified_at = "2026-08-17T14:00:00+00:00"
+
+[[telemetry]]
+id = "idp-audit"
+source = "Identity provider audit log"
+owner = "Identity engineering"
+verified_at = "2026-08-17T15:00:00+00:00"
+
+[[actions]]
+id = "account-discovery"
+name = "Enumerate approved canary account metadata"
+technique_id = "T1087.002"
+objective = "Confirm that cloud account discovery is visible to the identity monitoring path."
+targets = ["identity-tenant"]
+depends_on = []
+expected_telemetry = ["idp-audit"]
+cleanup = ["Remove the temporary query role assignment", "Archive the query identifier"]
+stop_conditions = ["Unexpected tenant write occurs", "Identity operations requests a stop"]
+destructive = false
+destructive_authorized = false
+reversible = true
+data_access = "metadata"
+
+[[actions]]
+id = "controlled-powershell"
+name = "Run the signed simulation script"
+technique_id = "T1059.001"
+objective = "Validate process and command-line telemetry on the managed canary endpoint."
+targets = ["workstation-canary"]
+depends_on = ["account-discovery"]
+expected_telemetry = ["edr-process"]
+cleanup = ["Delete the signed script and working directory", "Confirm the temporary certificate is absent"]
+stop_conditions = ["Endpoint health degrades", "EDR isolation begins", "Endpoint owner requests a stop"]
+destructive = false
+destructive_authorized = false
+reversible = true
+data_access = "none"
+
+[[detections]]
+id = "cloud-account-discovery"
+name = "Unusual account enumeration"
+technique_id = "T1087.002"
+owner = "Identity detection owner"
+telemetry_ids = ["idp-audit"]
+validation = "Alert reaches the exercise channel with the canary query identifier."
+
+[[detections]]
+id = "powershell-command-line"
+name = "Simulation PowerShell command line"
+technique_id = "T1059.001"
+owner = "Endpoint detection owner"
+telemetry_ids = ["edr-process"]
+validation = "Process event preserves signer, command-line, parent, host, and simulation marker."
